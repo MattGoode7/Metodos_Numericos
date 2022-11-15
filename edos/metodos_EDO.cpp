@@ -59,7 +59,7 @@ int menu(){
 }
 
 double f(double x, double y){
-    return -2*x*y;
+    return exp(-2*x)-2*y;
 }
 
 double fp(double x, double y){
@@ -70,16 +70,11 @@ void euler(){
     int n;
     double xf, h, xp, yp, aux;
     double x[MAXROW], y[MAXROW];
-    double y2[MAXROW], y3[MAXROW], q[MAXROW]; 
 
     string nombre = "euler.txt";
     ofstream archivo;
     archivo.open(nombre.c_str(), fstream::out);
     archivo << "xi\tyi" << endl;
-
-    string nombre2 = "eulerError.txt";
-    ofstream arc;
-    arc.open(nombre2.c_str(), fstream::out);
 
     cout << "Ingrese x0, xf. y0" << endl;
     cout << "\nx0: ";
@@ -88,9 +83,6 @@ void euler(){
     cin  >> xf;
     cout << "\ny0: ";
     cin  >> y[0];
-
-    y2[0] = y[0];
-    y3[0] = y[0];
 
     cout << "\nIngrese la cantidad de intervalos" << endl;
     cout << "\nn: ";
@@ -105,38 +97,7 @@ void euler(){
         x[i+1] = x[i] + h;
         archivo << x[i+1] << "\t" << y[i+1] << endl;
     }
-    
-    //Calculo del y2
-    for (int i = 0; i < n; i++)
-    {
-        yp = y2[i] + h*f(x[i],y2[i])/2;
-        xp = x[i] + h/2;
-        y2[i+1] = yp + h*f(xp,yp)/2;
-    }
-    
-    //Calculo del y3
-    for (int i = 0; i < n; i++)
-    {
-        yp = y3[i] + h*f(x[i],y[i])/4;
-        xp = x[i] + h/4;
-        yp = yp + h*f(xp,yp)/4;
-        xp = x[i] + h/4;
-        yp = yp + h*f(xp,yp)/4;
-        xp = x[i] + h/4;
-        y3[i+1] = yp + h*f(xp,yp)/4;
-    }
-
-    arc << "xi\tq" << endl;
-
-    //Calculo del Q
-    for (int i = 0; i <= n; i++)
-    {
-        aux = fabs((y[i]-y2[i])/(y2[i]-y3[i]));
-        q[i] = (log(aux))/log(2);
-        arc << x[i] << "\t" << q[i] << endl;
-    }
     archivo.close();
-    arc.close();
 }
 
 void heun(){
@@ -231,13 +192,13 @@ void rk4(){
     cout << "\nn: ";
     cin  >> n;
 
-    h = (xf-x[0])/n;
+    h = (double)(xf-x[0])/n;
 
     for (int i = 0; i < n; i++)
     {
         k[1] = f(x[i],y[i]);
-        k[2] = f(x[i] + h, y[i] + k[1]*h/2);
-        k[3] = f(x[i] + h/2, y[i] + k[2]*h/2);
+        k[2] = f(x[i] + h, y[i] + k[1] * h/2);
+        k[3] = f(x[i] + h/2, y[i] + k[2] * h/2);
         k[4] = f(x[i] + h, y[i] + k[3]*h);
 
         y[i+1] = y[i] + h*(k[1]+2*k[2]+2*k[3]+k[4])/6;

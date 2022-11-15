@@ -1,9 +1,10 @@
 #include <iostream>
 #include <math.h>
+#include <iomanip>
 
-#define MAXROW 12
+#define MAXROW 11
 #define MAXCOL 2
-#define MAXCOL2 12
+#define MAXCOL2 11
 
 using namespace std;
 
@@ -12,7 +13,7 @@ void printMatrixI(double[MAXROW][MAXCOL], int);
 void buildMatrix(double [MAXROW][MAXCOL], double [MAXROW][MAXCOL2], double [MAXROW], int);
 void interpolation(double [MAXROW][MAXCOL], double [MAXROW], int);
 void printMatrix(double [MAXROW][MAXCOL2], double [MAXROW], int, int);
-void triangulation(double [MAXROW][MAXCOL2], double [MAXROW], int, int);
+void triangulation(double [MAXROW][MAXCOL2], double [MAXROW], int, int, double[MAXROW][MAXCOL], int *);
 void retrosustitucion(double [MAXROW][MAXCOL2], double [MAXROW], double [MAXROW], int, int);
 void pivot(double [MAXROW][MAXCOL2], double [MAXROW], int, int, int);
 
@@ -35,7 +36,8 @@ int main(int argc, char *argv[]) {
 
     cout << "\nMatriz despues de reducir" << endl;
 
-    triangulation(matrix, b, 4 * (rows - 1), 4 * (rows - 1));
+    readTxtI(nodes, &rows);
+    triangulation(matrix, b, 4 * (rows - 1), 4 * (rows - 1), nodes, &rows);
     retrosustitucion(matrix, b, z, 4 * (rows - 1), 4 * (rows - 1));
     interpolation(nodes, z, rows);
 
@@ -63,7 +65,7 @@ void printMatrixI(double m[MAXROW][MAXCOL], int rows) {
     cout << "------ NODOS ------" << endl;
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < MAXCOL; j++) {
-            cout << m[i][j];
+            cout << fixed << setprecision(2)<< m[i][j] << "\t";
         }
         cout << endl;
     }
@@ -73,11 +75,10 @@ void printMatrixI(double m[MAXROW][MAXCOL], int rows) {
 void printMatrix(double m[MAXROW][MAXCOL2], double b[MAXROW], int rows, int columns) {
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
-            cout << m[i][j];
+            cout << m[i][j] << "\t";
         }
         cout << b[i];
         cout << endl;
-
     }
 }
 
@@ -128,6 +129,7 @@ void buildMatrix(double nodes[MAXROW][MAXCOL], double matrix[MAXROW][MAXCOL2], d
 void interpolation (double nodes[MAXROW][MAXCOL], double z[MAXROW], int rows) {
     double value;
     double result = 0;
+
     cout << "\nIngrese el valor a interpolar" << endl;
     cin  >> value;
 
@@ -138,14 +140,16 @@ void interpolation (double nodes[MAXROW][MAXCOL], double z[MAXROW], int rows) {
                 break;
             }
         }
-        cout << "El valor interpolado para " << value << "es: " << result;
+        cout << "El valor interpolado para " << value << " es: " << result;
     }
     else{
         cout << "\nEl valor a interpolar no se encuentra en el rango de datos\n" << endl;
     }
 }
 
-void triangulation(double m[MAXROW][MAXCOL2], double b[MAXROW], int rows, int columns) {
+void triangulation(double m[MAXROW][MAXCOL2], double b[MAXROW], int rows, int columns, double a[MAXROW][MAXCOL], int *rows1) {
+    readTxtI(a, rows1);
+    
     for (int i = 0; i < rows - 1; ++i) {
         pivot(m, b, rows, columns, i);
         for (int j = i + 1; j < rows; ++j) {
@@ -156,7 +160,9 @@ void triangulation(double m[MAXROW][MAXCOL2], double b[MAXROW], int rows, int co
             b[j] = b[i] * factor + b[j];
         }
     }
+    readTxtI(a, rows1);
     printMatrix(m, b, rows, columns);
+    readTxtI(a, rows1);
 }
 
 void pivot(double m[MAXROW][MAXCOL2], double b[MAXROW], int rows, int columns, int i) {

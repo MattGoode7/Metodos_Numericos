@@ -1,6 +1,10 @@
+/* Si hay errores al calcular, verificar por sobre todo el MAXROW */
+
 #include <math.h>
 #include <iostream>
-#define MAXROW 6
+#include <iomanip>
+#include <fstream>
+#define MAXROW 10000
 
 using namespace std;
 
@@ -52,8 +56,12 @@ int menu(){
     return op;
 }
 
+////////////////////////////                                //////////////////////////////
+///////////////////////////     FUNCIONES MATEMATICAS      ///////////////////////////////
+///////////////////////////                                ///////////////////////////////
+
 double f(double x){
-    return pow(x,2)+1;
+    return 9*pow(x,2);
 }
 
 double integral(double c[MAXROW], double x[MAXROW], double a, double b, int puntos){
@@ -66,10 +74,17 @@ double integral(double c[MAXROW], double x[MAXROW], double a, double b, int punt
     integ *= ((b-a)/2);
     return integ;    
 }
+//////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////                                //////////////////////////////
+///////////////////////////     METODOS DE INTEGRACION     ///////////////////////////////
+///////////////////////////                                ///////////////////////////////
 
 void trapecio(){
-    int a, b, n;
-    double suma, h = 0;
+    int n;
+    double a, b;
+    double suma, h = 0, suma2 = 0;
+    double x[MAXROW] = {0};
 
     cout << "\nIngrese los limites de integracion" <<endl;
     cout << "a: ";
@@ -81,18 +96,20 @@ void trapecio(){
     cin  >> n;
 
     suma = f(a)+f(b);
-    h = (b-a)/n;
+
+    h = (double)(b-a)/n;
 
     for (int i = 1; i < n; i++)
     {
         suma += 2*f(a+i*h);
     }
-    suma *= (h/2);
-    cout << "\nValor de la integral: " << suma;
+    suma *= h/2;
+    cout << "\n(Trapecio) Valor de la integral: " <<  fixed << setprecision(7) << suma;
 }
 
 void simpson(){
-    int a, b, n;
+    int n;
+    double a, b;
     double suma, h, x = 0;
 
     cout << "\nIngrese los limites de integracion" <<endl;
@@ -117,7 +134,7 @@ void simpson(){
         suma = suma + 2*f(x) + 4*f(x-h);
     }
     suma = (suma + 4*f(b-h))*(h/3);
-    cout << "\nValor de la integral: " << suma << endl;
+    cout << "\n(Simpson) Valor de la integral: " <<  fixed << setprecision(40) << suma << endl;
 }
 
 void glegendre(){
@@ -152,31 +169,28 @@ void glegendre(){
     case 0:
         cout << "\nFin del programa" << endl;
         break;
-    case 1:
-        cout << "\nQue parte de que entre 2 y 6 no se entiende" << endl;
-        break;
     case 2:
         integ = integral(c2,x2,a,b,puntos);
-        cout << "\nValor de la integral: " << integ << endl;
+        cout << "\n(Gauss-Legendre) Valor de la integral: " << fixed << setprecision(10) << integ << endl;
         break;
     case 3:
         integ = integral(c3,x3,a,b,puntos);
-        cout << "\nValor de la integral: " << integ << endl;
+        cout << "\n(Gauss-Legendre) Valor de la integral: " << fixed << setprecision(10) << integ << endl;
         break;
     case 4:
         integ = integral(c4,x4,a,b,puntos);
-        cout << "\nValor de la integral: " << integ << endl;
+        cout << "\n(Gauss-Legendre) Valor de la integral: " << fixed << setprecision(10) << integ << endl;
         break;
     case 5: 
         integ = integral(c5,x5,a,b,puntos);
-        cout << "\nValor de la integral: " << integ << endl;
+        cout << "\n(Gauss-Legendre) Valor de la integral: " << fixed << setprecision(10) << integ << endl;
         break;
     case 6:
         integ = integral(c6,x6,a,b,puntos);
-        cout << "\nValor de la integral: " << integ << endl;
+        cout << "\n(Gauss-Legendre) Valor de la integral: " << fixed << setprecision(10) << integ << endl;
         break;
     default:
-        cout << "La cantidad de puntos debe ser entre 2 y 6" << endl;
+        cout << "\n(Gauss-Legendre) Valor de la integral: " << fixed << setprecision(10) << integ << endl;
         break;
     }
 }

@@ -4,6 +4,8 @@
         "iostream": "cpp",
         "cstdlib": "cpp",
         "cmath": "cpp",
-        "xstring": "cpp"
+        "xstring": "cpp",
+        "ios": "cpp",
+        "iomanip": "cpp"
     }
 }
