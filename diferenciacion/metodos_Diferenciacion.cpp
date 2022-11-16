@@ -6,7 +6,6 @@
 using namespace std;
 
 void firstOrder(double, double, double, int);
-void firstOrderTabla();
 void secondOrder(double, double, double, int);
 void thirdOrder(double, double, double, int);
 void fourthOrder(double, double, double, int);
@@ -55,9 +54,6 @@ int main(){
         case 4:
             fourthOrder(xc, xf, h, n);
             break;
-        case 5:
-            firstOrderTabla();
-            break;
         default:
             cout << "Se ha ingresado una opcion invalida" << endl;
             break;
@@ -76,7 +72,6 @@ int menu(){
     cout << "2. Segundo orden" << endl;
     cout << "3. Tercer orden" << endl;
     cout << "4. Cuarto orden" << endl;
-    cout << "\n5. Primer orden (tabla)" << endl;
     cout << "\n0. Salir" << endl;
 
     cout << "\nOpcion: ";
@@ -221,60 +216,4 @@ void fourthOrder(double xc, double xf, double h, int n){
     }
     cout << "\nArchivo generado" << endl;
     archivo.close();
-}
-
-void firstOrderTabla(){
-    
-    string nombre = "firstOrderTable.txt";
-    ofstream archivo;
-    archivo.open(nombre.c_str(), fstream::out);
-
-    double xc, xf, h;
-    int n, rows, fil;
-    double a, b;
-    double suma;
-    FILE *readPtr;
-    float k;
-    double fp;
-
-    readPtr = fopen("dataDif.txt", "r");
-    fscanf(readPtr, "%d", &fil);
-    rows = fil;
-
-    /////////////////////////////////////////////////
-    /////////////Carga de valores aca////////////////
-    /////////////////////////////////////////////////
-
-    double y[MAXROW];
-
-    for (int i = 0; i < rows; i++) {
-        fscanf(readPtr, "%f", &k);
-        y[i] = k;
-    }
-    fclose(readPtr);
-
-    cout << "Ingrese x0 y xf" << endl;
-    cout << "\nx0: ";
-    cin  >> xc;
-    cout << "\nxf: ";
-    cin  >> xf;
-
-    n = rows - 1;
-
-    h = (xf-xc)/n;
-
-    for (int i = 0; i < 2; ++i) {
-        fp = (-y[i + 2] + 4 * y[i + 1] - 3 * y[i]) / (2 * h);
-        archivo << fp << endl;
-    }
-
-    for (int i = 2; i < n - 1; ++i) {
-        fp = (-y[i + 2] + 8 * y[i + 1] - 8 * y[i - 1] + y[i - 2]) / (12 * h);
-        archivo << fp << endl;
-    }
-
-    for (int i = n - 1; i < n + 1; ++i) {
-        fp = (3 * y[i] - 4 * y[i - 1] + y[i - 2]) / (2 * h);
-        archivo << fp << endl;
-    }
 }

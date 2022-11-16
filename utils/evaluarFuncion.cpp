@@ -19,7 +19,7 @@ int main(){
 
 ///////////////////////////     FUNCIONES MATEMATICAS      ///////////////////////////////
 double f(double x){
-    return 3*pow(x,3) + 1;
+    return log(x)*pow(x,2)+4*x;
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -34,8 +34,8 @@ void funcionIntervalo(){
     archivo << "xi\t\tyi" << endl;
 
     double num = 0;
-    double x1 = 0,x2 = 1;
-    double n = 8;
+    double x1 = 2, x2 = 3;
+    double n = 6;
     double h;
     h = (x2-x1)/n;
 

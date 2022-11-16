@@ -1,202 +1,271 @@
+#include <stdio.h>
 #include <iostream>
 #include <math.h>
-#include <iomanip>
-
-#define MAXROW 11
-#define MAXCOL 2
-#define MAXCOL2 11
 
 using namespace std;
 
-void readTxtI(double[MAXROW][MAXCOL], int *);
-void printMatrixI(double[MAXROW][MAXCOL], int);
-void buildMatrix(double [MAXROW][MAXCOL], double [MAXROW][MAXCOL2], double [MAXROW], int);
-void interpolation(double [MAXROW][MAXCOL], double [MAXROW], int);
-void printMatrix(double [MAXROW][MAXCOL2], double [MAXROW], int, int);
-void triangulation(double [MAXROW][MAXCOL2], double [MAXROW], int, int, double[MAXROW][MAXCOL], int *);
-void retrosustitucion(double [MAXROW][MAXCOL2], double [MAXROW], double [MAXROW], int, int);
-void pivot(double [MAXROW][MAXCOL2], double [MAXROW], int, int, int);
+int main() {
 
-int main(int argc, char *argv[]) {
+    FILE *fp;
+    fp = fopen("nodes.txt", "r");
+    if (fp == NULL) {
+        puts("No se puede abrir el archivo");
+    }
 
-    double nodes[MAXROW][MAXCOL];
-    double matrix[MAXROW][MAXCOL2];
-    double b[MAXROW];
-    double z[MAXROW];
-    int rows;
+    //contador de filas
+    int filas = 0;
+    char c;
+    int maxValues = 0;
+    int columnas;
 
-    readTxtI(nodes, &rows);
-    printMatrixI(nodes, rows);
-    // intervals = nodes - 1
-    buildMatrix(nodes, matrix, b, rows - 1);
-
-    cout << "\nMatriz antes de reducir" << endl;
-
-    printMatrix(matrix, b, 4 * (rows - 1), 4 * (rows - 1));
-
-    cout << "\nMatriz despues de reducir" << endl;
-
-    readTxtI(nodes, &rows);
-    triangulation(matrix, b, 4 * (rows - 1), 4 * (rows - 1), nodes, &rows);
-    retrosustitucion(matrix, b, z, 4 * (rows - 1), 4 * (rows - 1));
-    interpolation(nodes, z, rows);
-
-    return 0;
-}
-
-void readTxtI(double m[MAXROW][MAXCOL], int *rows) {
-    FILE *readPtr;
-    int j, i, n;
-    float k;
-    readPtr = fopen("data.txt", "r");
-    fscanf(readPtr, "%d", &n);
-    *rows = n;
-
-    for (i = 0; i < *rows; i++) {
-        for (j = 0; j < MAXCOL; j++) {
-            fscanf(readPtr, "%f", &k);
-            m[i][j] = k;
+    while ((c = fgetc(fp)) != EOF) {
+        if (c == '\n') {
+            filas++;
         }
     }
-    fclose(readPtr);
-}
 
-void printMatrixI(double m[MAXROW][MAXCOL], int rows) {
-    cout << "------ NODOS ------" << endl;
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < MAXCOL; j++) {
-            cout << fixed << setprecision(2)<< m[i][j] << "\t";
+    printf("numero de filas=%i\n", filas);
+
+    //resetear el puntero
+    rewind(fp);
+    double x[filas];
+    double y[filas]; //Termino independiente
+
+
+    //Cargo los datos leidos en el array
+    int xi = 0;
+    int yi = 0;
+    int j = 0;
+    int i;
+    for (i = 0; i < filas; i++) {
+        j = 0;
+
+        do {
+            if (j == 0) {
+                fscanf(fp, "%lf", &(x[xi]));
+                xi++;
+                j++;
+            } else {
+                fscanf(fp, "%lf", &(y[yi]));
+                yi++;
+            }
+        } while ((c = fgetc(fp)) != '\n');
+
+    }
+
+    columnas = j;
+
+    printf("numero de columnas=%i\n\n", columnas);
+
+    //imprimo la matriz para verificar que lo leyo correctamente
+
+    printf("LOS ELEMENTOS DE LA TABLA SON:\n");
+
+    for (i = 0; i < filas; i++) {
+        printf("%lf \t %lf", x[i], y[i]);
+        printf("\n");
+    }
+
+
+    //#include"lectura_escritura_datos.cpp"
+    //Puntos deben estar ordenados!
+    cout << endl << "SPLINE CUBICA NATURAL" << endl;
+
+    int n = filas;
+
+    //Error real: valor real - valor del metodo
+    //Error relativo: (valor real - valor del metodo) / valor real
+    //Error porcentual : idem del de arriba, pero multiplicarlo por 100.
+
+    //tengo 4(n-1) incognitas
+    int N = 4 * (n - 1) + 1; // N total
+    double m[N][N];
+    double b[N];
+    double aux;
+    double valor; //valor buscado
+    double resultado; // solucion!!
+
+    cout << endl << "Cantidad de puntos: " << n << endl;
+
+    //inicializo mis matrices en cero
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++)
+            m[i][j] = 0;
+        b[i] = 0;
+    }
+
+
+    //Polinomios
+    for (int i = 1; i < n; i++) {
+        m[i * 2 - 1][i * 4 - 3] = 1;
+        m[i * 2 - 1][i * 4 - 2] = x[i - 1];
+        m[i * 2 - 1][i * 4 - 1] = pow(x[i - 1], 2);
+        m[i * 2 - 1][i * 4] = pow(x[i - 1], 3);
+        b[i * 2 - 1] = y[i - 1];
+
+        m[i * 2][i * 4 - 3] = 1;
+        m[i * 2][i * 4 - 2] = x[i + 1 - 1];
+        m[i * 2][i * 4 - 1] = pow(x[i + 1 - 1], 2);
+        m[i * 2][i * 4] = pow(x[i + 1 - 1], 3);
+        b[i * 2] = y[i + 1 - 1];
+    }
+
+
+    //Derivadas Primeras
+    j = 2 * (n - 1);
+    for (int i = 2; i <= n - 1; i++) {
+        m[j + i - 1][(i - 1) * 4 - 3] = 0;
+        m[j + i - 1][(i - 1) * 4 - 2] = 1;
+        m[j + i - 1][(i - 1) * 4 - 1] = 2 * x[i - 1];
+        m[j + i - 1][(i - 1) * 4] = 3 * pow(x[i - 1], 2);
+
+        m[j + i - 1][(i - 1) * 4 + 1] = 0;
+        m[j + i - 1][(i - 1) * 4 + 2] = -1;
+        m[j + i - 1][(i - 1) * 4 + 3] = -2 * x[i - 1];
+        m[j + i - 1][(i - 1) * 4 + 4] = -3 * pow(x[i - 1], 2);
+    }
+
+
+
+    // Derivadas Segundas
+    j = 2 * (n - 1) + (n - 2);
+    for (int i = 2; i <= n - 1; i++) {
+        m[j + i - 1][(i - 1) * 4 - 3] = 0;
+        m[j + i - 1][(i - 1) * 4 - 2] = 0;
+        m[j + i - 1][(i - 1) * 4 - 1] = 2;
+        m[j + i - 1][(i - 1) * 4] = 6 * x[i - 1];
+
+        m[j + i - 1][(i - 1) * 4 + 1] = 0;
+        m[j + i - 1][(i - 1) * 4 + 2] = 0;
+        m[j + i - 1][(i - 1) * 4 + 3] = -2;
+        m[j + i - 1][(i - 1) * 4 + 4] = -6 * x[i - 1];
+    }
+
+    //Condicion de Splain natural (se puede cambiar!! OJO) (recordar que aca lo estoy igualando a la derivada
+    // segunda =0!!
+    j = 2 * (n - 1) + (n - 2) + (n - 2);
+    m[j + 1][1] = 0;
+    m[j + 1][2] = 0;
+    m[j + 1][3] = 2;
+    m[j + 1][4] = 6 * x[0];
+    b[j + 1] = 0;
+
+    m[j + 2][N - 4] = 0;
+    m[j + 2][N - 3] = 0;
+    m[j + 2][N - 2] = 2;
+    m[j + 2][N - 1] = 6 * x[n - 1];
+    b[j + 2] = 0;
+
+    // muevo la matriz un indice!!
+    for (int i = 1; i < N; i++) {
+        for (j = 1; j < N; j++) {
+            m[i - 1][j - 1] = m[i][j];
         }
+        b[i - 1] = b[i];
+    }
+
+
+    //Imprimo mi matriz
+    for (int i = 0; i < N - 1; i++) {
+        for (j = 0; j < N - 1; j++) {
+            cout << m[i][j] << " ";
+        }
+        cout << " ---> " << b[i];
         cout << endl;
     }
-    cout << "-------------------\n" << endl;
-}
 
-void printMatrix(double m[MAXROW][MAXCOL2], double b[MAXROW], int rows, int columns) {
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < columns; j++) {
-            cout << m[i][j] << "\t";
-        }
-        cout << b[i];
-        cout << endl;
-    }
-}
+    //redefino mi N
+    int Nnuevo = N - 1;
+    double errorMinimo = 1e-6;
+    double f;
 
-void buildMatrix(double nodes[MAXROW][MAXCOL], double matrix[MAXROW][MAXCOL2], double b[MAXROW], int intervals) {
-
-    ///construccion de las primeras 2n ecuaciones(imagen de la funcion)
-    for (int i = 0; i < intervals; ++i) {
-        for (int j = 0; j <= 3; ++j) {
-            matrix[2 * i][4 * i + j] = pow(nodes[i][0], 3 - j);
-            matrix[2 * i + 1][4 * i + j] = pow(nodes[i + 1][0], 3 - j);
-        }
-        b[2 * i] = nodes[i][1];
-        b[2 * i + 1] = nodes[i + 1][1];
-    }
-
-    ///construccion de las primeras n-1 ecuaciones(derivadas primeras)
-    for (int i = 2 * intervals; i <= (3 * intervals - 2); ++i) {
-        for (int j = 0; j <= intervals - 2; ++j) {
-            for (int k = 0; k <= 2; ++k) {
-                matrix[i][4 * j + k] = (3 - k) * pow(nodes[j + 1][0], 2 - k);
-                matrix[i][4 * (j + 1) + k] = -(3 - k) * pow(nodes[j + 1][0], 2 - k);
+    cout << Nnuevo << "N" << endl;
+    //triangulacion superior
+    for (int i = 0; i < Nnuevo - 1; i++) {
+        //pivoteo
+        int cambio = 0;
+        if (fabs(m[i][i]) < errorMinimo) {
+            for (int j = i + 1; j <= Nnuevo - 1; j++) {
+                if (fabs(m[j][i]) > errorMinimo) {
+                    for (int k = i; k <= Nnuevo - 1; k++) {
+                        aux = m[i][k];
+                        m[i][k] = m[j][k];
+                        m[j][k] = aux;
+                    }
+                    aux = b[i];
+                    b[i] = b[j];
+                    b[j] = aux;
+                    cambio = 1;
+                    break;
+                }
+            }
+            if (cambio == 0) {
+                cout << "El Sistema es singular! no se puede resolver: " << i << "------m: " << m[i][i] << endl;
+                return 0;
             }
         }
-        b[i] = 0;
-    }
-
-    ///derivadas segundas
-    for (int i = 3 * intervals - 1; i <= (4 * intervals - 3); ++i) {
-        for (int j = 0; j <= intervals - 2; ++j) {
-            matrix[i][4 * j] = 6 * nodes[j + 1][0];
-            matrix[i][4 * j + 1] = 2;
-            matrix[i][4 * j + 4] = (-6 * nodes[j + 1][0]);
-            matrix[i][4 * j + 5] = (-2);
+        //***********************FIN PIVOTEO********************************
+        for (int j = i + 1; j <= Nnuevo - 1; j++) {
+            f = (-m[j][i]) / (m[i][i]);
+            for (int k = i; k <= Nnuevo - 1; k++)
+                m[j][k] = m[j][k] + f * m[i][k];
+            b[j] = b[j] + f * b[i];
         }
-        b[i] = 0;
     }
 
-    matrix[4 * intervals - 2][0] = 6 * nodes[0][0];
-    matrix[4 * intervals - 2][1] = 2;
-    b[4 * intervals - 2] = 0;
+    //imprime la matriz como quedo!!
+    cout << endl << "La Matriz triangular superior quedo: " << endl;
 
-    matrix[4 * intervals - 1][4 * intervals - 4] = 6 * nodes[intervals][0];
-    matrix[4 * intervals - 1][4 * intervals - 3] = 2;
-    b[4 * intervals - 1] = 0;
+    for (int i = 0; i < Nnuevo; i++) {
+        for (int j = 0; j < Nnuevo; j++) {
+            cout << m[i][j] << " ";
+        }
+        cout << " ---> " << b[i];
+        cout << endl;
+    }
 
-}
 
-void interpolation (double nodes[MAXROW][MAXCOL], double z[MAXROW], int rows) {
-    double value;
-    double result = 0;
+    //sustitucion regresiva
+    double suma;
+    double a[Nnuevo]; //vector de soluciones
 
-    cout << "\nIngrese el valor a interpolar" << endl;
-    cin  >> value;
+    //valor de la ultima variable
+    a[Nnuevo - 1] = b[Nnuevo - 1] / m[Nnuevo - 1][Nnuevo - 1];
+    cout << endl << "----- Soluciones -----" << endl;
+    cout << endl << "a[" << Nnuevo - 1 << "]= " << a[Nnuevo - 1];
 
-    if (value >= nodes[0][0] && value <= nodes[rows - 1][0]) {
-        for (int i = 0; i < rows; ++i) {
-            if(value <= nodes[i+1][0]){
-                result = z[4*i]*pow(value,3) + z[4*i+1]*pow(value,2) + z[4*i+2]*value + z[4*i+3];
+    for (int i = Nnuevo - 2; i >= 0; i--) {
+        suma = b[i];
+        for (int j = i + 1; j <= Nnuevo - 1; j++) {
+            suma -= m[i][j] * a[j];
+        }
+        a[i] = (suma) / m[i][i];
+        cout << endl << "a[" << i << "]= " << a[i];
+    }
+
+    cout << endl;
+
+    //Modificacion!!
+    double valorFinal;
+    double delta;
+
+    do
+    {
+        cout << "Ingrese el valor a interpolar ";
+        cin >> valor;
+        cout << "X :          Y: " << endl;
+
+        for (int i = 0; i < n - 1; i++) {
+            if (x[i] <= valor && valor <= x[i + 1]) {
+                j = i * 4;
+                resultado = a[j] + a[j + 1] * valor + a[j + 2] * pow(valor, 2) + a[j + 3] * pow(valor, 3);
+                //cout << "i" << i << endl;
                 break;
             }
         }
-        cout << "El valor interpolado para " << value << " es: " << result;
-    }
-    else{
-        cout << "\nEl valor a interpolar no se encuentra en el rango de datos\n" << endl;
-    }
-}
 
-void triangulation(double m[MAXROW][MAXCOL2], double b[MAXROW], int rows, int columns, double a[MAXROW][MAXCOL], int *rows1) {
-    readTxtI(a, rows1);
-    
-    for (int i = 0; i < rows - 1; ++i) {
-        pivot(m, b, rows, columns, i);
-        for (int j = i + 1; j < rows; ++j) {
-            double factor = -m[j][i] / m[i][i];
-            for (int k = 0; k < columns; ++k) {
-                m[j][k] = m[i][k] * factor + m[j][k];
-            }
-            b[j] = b[i] * factor + b[j];
-        }
-    }
-    readTxtI(a, rows1);
-    printMatrix(m, b, rows, columns);
-    readTxtI(a, rows1);
-}
-
-void pivot(double m[MAXROW][MAXCOL2], double b[MAXROW], int rows, int columns, int i) {
-    double tolerance = pow(10, -3);
-    if (fabs(m[i][i]) < tolerance) {
-        for (int j = i + 1; j < rows; ++j) {
-            if (fabs(m[j][i]) > fabs(m[i][i])) {
-                for (int k = i; k < columns; ++k) {
-                    double swap = m[i][k];
-                    m[i][k] = m[j][k];
-                    m[j][k] = swap;
-                }
-                double swap = b[i];
-                b[i] = b[j];
-                b[j] = swap;
-            }
-        }
-    }
-}
-
-void retrosustitucion(double m[MAXROW][MAXCOL2], double b[MAXROW], double x[MAXROW], int rows, int columns) {
-    double value = 0;
-    value = b[rows - 1] / m[rows - 1][columns - 1];
-    x[rows - 1] = value;
-    for (int i = rows - 2; i >= 0; --i) {
-        double sum = 0;
-        for (int j = i + 1; j < columns; ++j) {
-            sum = sum + m[i][j] * x[j];
-        }
-        value = (b[i] - sum) / m[i][i];
-        x[i] = value;
-    }
-    cout << "\nConjunto solucion" << endl;
-    for (int i = 0; i < rows; ++i) {
-        cout << "x" << i << " = " << x[i];
-    }
+        printf("%lf %lf", valor, resultado);
+        cout << endl;
+        valor += delta;
+    } while (true);
 }

@@ -13,3 +13,19 @@
     // I = suma + suma2;
     // cout << "\nValor de la integral: " <<  fixed << setprecision(7) << I;
 
+--- Ejercicio 3 parcial 2 ---
+    
+    for (int i = 0; i < N; ++i) {
+        if (i == 0) {
+            y[i + 1] = y[i] + h * function(x[i], y[i]);
+            x[i + 1] = x[i] + h;
+            file << x[i] << "\t" << y[i] << "\t" << endl;
+        } else {
+            x[i + 1] = x[i] + h;
+            y[i + 1] = y[i] + h * (2 * function(x[i], y[i]) - function(x[i - 1], y[i - 1]));
+            file << x[i] << "\t" << y[i] << "\t" << endl;
+        }
+    }
+
+    file << x[N] << "\t" << y[N] << "\t" << endl;
+    file.close();

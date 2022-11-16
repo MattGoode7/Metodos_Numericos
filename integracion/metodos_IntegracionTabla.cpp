@@ -28,6 +28,7 @@ int main(){
             break;
         case 2:
             simpsonTabla();
+            break;
         default:
             cout << "\nSe ha ingresado una opcion invalida" << endl;
             break;

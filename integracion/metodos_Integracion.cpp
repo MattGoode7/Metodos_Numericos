@@ -61,7 +61,7 @@ int menu(){
 ///////////////////////////                                ///////////////////////////////
 
 double f(double x){
-    return 9*pow(x,2);
+    return x + 2*x*log(x) + 4;
 }
 
 double integral(double c[MAXROW], double x[MAXROW], double a, double b, int puntos){
