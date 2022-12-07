@@ -1,0 +1,2 @@
+Colocar el numero de filas primero (sin espacio al final)
+La tabla utiliza el valor de los puntos en x (solo los yi)

@@ -59,7 +59,7 @@ int menu(){
 }
 
 double f(double x, double y){
-    return y * pow(4*y-x,2);
+    return 3*sqrt(y);
 }
 
 double fp(double x, double y){
@@ -91,12 +91,28 @@ void euler(){
     h = (xf-x[0])/n;
 
     //Calculo del y1
-    for (int i = 0; i < n; i++)
-    {
-        y[i+1] = y[i] + h*f(x[i],y[i]);
-        x[i+1] = x[i] + h;
-        archivo << x[i+1] << "\t" << y[i+1] << endl;
+    // for (int i = 0; i < n; i++)
+    // {
+    //     y[i+1] = y[i] + h*f(x[i],y[i]);
+    //     x[i+1] = x[i] + h;
+    //     archivo << x[i+1] << "\t" << y[i+1] << endl;
+    // }
+
+    //Modificacion Recuperatorio
+
+    for (int i = 0; i < n; ++i) {
+        if (i == 0) {
+            y[i + 1] = y[i] + h * f(x[i], y[i]);
+            x[i + 1] = x[i] + h;
+            archivo << x[i + 1] << "\t" << y[i + 1] << "\t" << endl;
+        } else {
+            x[i + 1] = x[i] + h;
+            y[i + 1] = y[i] + h * (2 * f(x[i], y[i]) - f(x[i - 1], y[i - 1]));
+            archivo << x[i + 1] << "\t" << y[i + 1] << "\t" << endl;
+        }
     }
+    
+
     archivo.close();
 }
 

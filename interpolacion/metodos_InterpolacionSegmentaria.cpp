@@ -259,7 +259,6 @@ int main() {
             if (x[i] <= valor && valor <= x[i + 1]) {
                 j = i * 4;
                 resultado = a[j] + a[j + 1] * valor + a[j + 2] * pow(valor, 2) + a[j + 3] * pow(valor, 3);
-                //cout << "i" << i << endl;
                 break;
             }
         }

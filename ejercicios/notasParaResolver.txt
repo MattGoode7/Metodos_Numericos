@@ -1,0 +1,2 @@
+---- INTERPOLACIÓN ----
+- Para pocos datos y polinimo interpolador usar Lagrange (metodos_Interpolacion)

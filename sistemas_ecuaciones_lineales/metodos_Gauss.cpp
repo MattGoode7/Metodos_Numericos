@@ -15,8 +15,8 @@
 
 /* Valores constantes para filas y columnas */
 
-#define MAXCOL 10
-#define MAXROW 10
+#define MAXCOL 15
+#define MAXROW 15
 
 using namespace std;
 
@@ -26,6 +26,8 @@ void read(double [MAXROW][MAXCOL], double [MAXROW], int *, int *);
 void print(double [MAXROW][MAXCOL], double [MAXROW], int, int);
 void triangulacion(double [MAXROW][MAXCOL], double [MAXROW], int, int);
 void retrosustitucion (double [MAXROW][MAXCOL], double [MAXROW], double [MAXROW], int, int);
+void banda(double [MAXROW][MAXCOL], double, int, int);
+void save(double [MAXCOL][MAXROW], double [MAXROW]);
 
 int main(){
 
@@ -43,6 +45,7 @@ int main(){
     print(m, b, rows, columns);
     triangulacion(m, b, rows, columns);
     retrosustitucion(m, b, x, rows, columns);
+
 }
 
 void read(double m[MAXROW][MAXCOL], double b[MAXROW], int *rows, int *columns){
@@ -99,10 +102,12 @@ void print(double m[MAXROW][MAXCOL], double b[MAXROW], int rows, int columns){
 void triangulacion(double m[MAXROW][MAXCOL], double b[MAXROW], int rows, int columns){
     double factor, swap = 0;
     double tol = pow(10, -3);
+    bool isPivot = false;
 
     /* Pivoteo parcial */
     for (int i = 0; i < rows-1; i++) {
         if(abs(m[i][i]) < tol){
+            isPivot = true;
             for (int l = i + 1; l < rows; l++){
                 if(abs(m[l][i]) > abs(m[i][l])){
                     for (int n = 0; n < columns; n++){
@@ -115,6 +120,10 @@ void triangulacion(double m[MAXROW][MAXCOL], double b[MAXROW], int rows, int col
                     b[l] = swap;
                 }
             }  
+        }
+
+        if(isPivot){
+            cout << "\nSe realizo un pivoteo parcial" << endl;
         }
 
         for (int j = i+1; j < rows; j++) {

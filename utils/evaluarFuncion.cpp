@@ -1,5 +1,9 @@
 /* Si hay errores al calcular, verificar por sobre todo el MAXROW */
 
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+/* RECORDAR CAMBIAR VALORES INICIALES Y CANTIDAD DE SUBINTERVALOS */
+/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+
 #include <math.h>
 #include <iostream>
 #include <iomanip>
@@ -19,7 +23,7 @@ int main(){
 
 ///////////////////////////     FUNCIONES MATEMATICAS      ///////////////////////////////
 double f(double x){
-    return log(x)*pow(x,2)+4*x;
+    return exp(sqrt(1 + x)) * log(1 + 2 * pow(x, 2));
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -34,7 +38,7 @@ void funcionIntervalo(){
     archivo << "xi\t\tyi" << endl;
 
     double num = 0;
-    double x1 = 2, x2 = 3;
+    double x1 = 0, x2 = 1;
     double n = 6;
     double h;
     h = (x2-x1)/n;

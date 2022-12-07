@@ -4,10 +4,11 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
-#define MAXROW 10000
+#define MAXROW 100
 
 using namespace std;
 
+double F(double);
 void trapecioTabla();
 void simpsonTabla();
 int menu();
@@ -47,6 +48,10 @@ int menu(){
     cout << "\nOpcion: ";
     cin >> op;
     return op;
+}
+
+double F(double x){
+    return 6*pow(x,2) + 1;
 }
 
 void trapecioTabla(){

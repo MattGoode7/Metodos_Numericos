@@ -61,7 +61,7 @@ int menu(){
 ///////////////////////////                                ///////////////////////////////
 
 double f(double x){
-    return (-3 + sin(2*x))/pow(cos(x)+sin(x),3);
+    return pow(4*x-5,3);
 }
 
 double integral(double c[MAXROW], double x[MAXROW], double a, double b, int puntos){

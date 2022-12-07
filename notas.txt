@@ -29,3 +29,6 @@
 
     file << x[N] << "\t" << y[N] << "\t" << endl;
     file.close();
+
+
+    

@@ -1,0 +1,5 @@
+Ver regresion y la forma de leer archivos
+Ver todos los codigos.
+
+-- PARA EL FINAL --
+- Ver valores equiespaciados

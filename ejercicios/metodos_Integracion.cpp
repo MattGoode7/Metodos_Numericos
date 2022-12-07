@@ -1,5 +1,7 @@
 /* Si hay errores al calcular, verificar por sobre todo el MAXROW */
 
+//////////////// ESTE ES EL METODO PARA LA INTEGRAL QUE MEZCLABA VELOCIDAD  Y PUNTOS EN X
+
 #include <math.h>
 #include <iostream>
 #include <iomanip>
@@ -9,7 +11,9 @@
 using namespace std;
 
 double f(double x);
+double f(double x, double v);
 double integral(double [MAXROW], double [MAXROW], double, double, int);
+double integral(double [MAXROW], double [MAXROW], double, double, int, double);
 void trapecio();
 void simpson();
 void glegendre();
@@ -60,8 +64,8 @@ int menu(){
 ///////////////////////////     FUNCIONES MATEMATICAS      ///////////////////////////////
 ///////////////////////////                                ///////////////////////////////
 
-double f(double x){
-    return (-3 + sin(2*x))/pow(cos(x)+sin(x),3);
+double f(double x, double v){
+    return 10 * exp(0.05 * v * pow(x,0.02));
 }
 
 double integral(double c[MAXROW], double x[MAXROW], double a, double b, int puntos){
@@ -70,6 +74,17 @@ double integral(double c[MAXROW], double x[MAXROW], double a, double b, int punt
     for (int i = 0; i < puntos; i++)
     {
         integ += (c[i]*f(((b-a)*x[i]+(b+a))/2));
+    }
+    integ *= ((b-a)/2);
+    return integ;    
+}
+
+double integral(double c[MAXROW], double x[MAXROW], double a, double b, int puntos, double v){
+    double integ = 0;
+
+    for (int i = 0; i < puntos; i++)
+    {
+        integ += (c[i]*f(((b-a)*x[i]+(b+a))/2),v);
     }
     integ *= ((b-a)/2);
     return integ;    
@@ -142,6 +157,7 @@ void glegendre(){
     double c[6];
     double x[6];
     double integ;
+    double v = 0;
     double c2[2] = {1,1};
     double x2[2] = {-0.577350269, 0.577350269};
     double c3[3] = {0.5555556, 0.8888889, 0.5555556};
@@ -163,7 +179,7 @@ void glegendre(){
     cout << "\nIngrese la cantidad de puntos (entre 2 y 6)" << endl;
     cout << "\nPuntos: ";
     cin  >> puntos;
-
+    
     switch (puntos)
     {
     case 0:
@@ -174,8 +190,13 @@ void glegendre(){
         cout << "\n(Gauss-Legendre) Valor de la integral: " << fixed << setprecision(10) << integ << endl;
         break;
     case 3:
-        integ = integral(c3,x3,a,b,puntos);
+
+    while (v != 50)
+        {
+        integ = integral(c3,x3,a,b,puntos,v);
         cout << "\n(Gauss-Legendre) Valor de la integral: " << fixed << setprecision(10) << integ << endl;
+        v+= 2.5;
+        }
         break;
     case 4:
         integ = integral(c4,x4,a,b,puntos);
@@ -192,5 +213,7 @@ void glegendre(){
     default:
         cout << "\n(Gauss-Legendre) Valor de la integral: " << fixed << setprecision(10) << integ << endl;
         break;
+    
     }
+
 }

@@ -6,6 +6,7 @@
         "cmath": "cpp",
         "xstring": "cpp",
         "ios": "cpp",
-        "iomanip": "cpp"
+        "iomanip": "cpp",
+        "math.h": "c"
     }
 }

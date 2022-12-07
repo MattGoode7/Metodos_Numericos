@@ -37,7 +37,7 @@ int main(){
 ///////////////////////////Funciones//////////////////////////////
 
 double f(double x){
-    return 0.87 + 0.00142391 * x -4.89626e-06 * pow(x,2)  -2.53033e-08* pow(x,3)  -1.03738e-11 * pow(x,4) + 3.91238e-13 * pow(x,5);
+    return -26.961 + 35.4439 * x;
 }
 
 /////////////////////////Funciones para matrices//////////////////////////
@@ -91,7 +91,7 @@ void nodos(double n[MAXR][MAXC], int *rows){
     float k;
     char c;
 
-    readPtr = fopen("data.txt", "r");
+    readPtr = fopen("nodes.txt", "r");
     while((c = fgetc(readPtr)) != EOF)
     {
         if(c == '\n'){
@@ -100,7 +100,7 @@ void nodos(double n[MAXR][MAXC], int *rows){
     }
 
     fclose(readPtr); //reinicia el puntero
-    readPtr = fopen("data.txt","r");
+    readPtr = fopen("nodes.txt","r");
 
     //Carga de los datos en la matriz m y b
     for (int i = 0; i < *rows; i++) {
@@ -218,6 +218,11 @@ void retrosustitucion (double m[MAXR][MAXC2], double b[MAXR], double x[MAXR], in
     cout << "\nPolinomio interpolador" << endl;
 
     for (int i = 0; i < rows; ++i) {
-        (i != rows - 1) ? (cout << x[i] << ".x^" << i << " + ") : (cout << x[i] << ".x^" << i);
+        if(i == 0){
+            cout << x[i] << " + ";
+        }
+        else{
+            (i != rows - 1) ? (cout << x[i] << ".x^" << i << " + ") : (cout << x[i] << ".x^" << i);
+        }
     }
 }

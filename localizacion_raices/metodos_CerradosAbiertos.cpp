@@ -9,8 +9,6 @@
     - Comprobar la tolerencia (si es necesario)
 */
 
-
-
 #include <iostream>
 #include <stdio.h>
 #include <math.h>
@@ -84,37 +82,28 @@ int menu(){
 ////////////////// FUNCIONES //////////////////////////////
 
 double f(double x){
-    double res;
-
     //Definir funcion
-    res = 3*x + sin(x) - exp(x);
-
-    return res;
+    return -3 + 4.23333 * x + -1.35 * pow(x,2) + 0.116667 * pow(x,3);
 }
 
 double fp(double xv){
-    //double fp = (f(xv + 0.01) - f(xv))/0.01;
+    //Funcion original
     double fp = (f(xv + 0.01) - f(xv))/(0.01);
 
     return fp;
 }
 
 double g(double x){
-    //x = x;
-    //x = pow(x,5)-3*pow(x,3)-2*pow(x,2)+2;
-    //x = cos(sin(x));
-
-    //x = pow(x,x-cos(x));
-
+    //Despejar x y devolver el resultado de la funcion
     x = (-sin(x) + exp(x))/3;
 
     return x;
 }
 
 double gp(double x){
-    //double gp = (g(x + 0.01) - g(x))/0.01;
+    //Funcion original
+    double gp = (g(x + 0.01) - g(x))/(0.01);
 
-    double gp = (g(x + 0.01) - g(x - 0.01))/(0.01);
     return gp;
 }
 
@@ -133,14 +122,12 @@ void biseccion(){
 
     cv = a;
 
-    cout << "\nIngrese la tolerancia en decimales" << endl;
-    cout << "Tolerancia: ";
-    cin >> tol;
+    //Definir tolerancia (si la piden)
+    tol = pow(10,-1);
+    cout << "Tolerancia: " << tol << endl;
 
     do
     {
-        //c = (a+b)/2;
-
         if (i == 0){
             c = (a + b) / 2;
             cv = a;
@@ -187,9 +174,9 @@ void regulaFalsi(){
 
     cv = a;
 
-    cout << "\nIngrese la tolerancia en decimales" << endl;
-    cout << "Tolerancia: ";
-    cin >> tol;
+    //Definir tolerancia (si la piden)
+    tol = pow(10,-8);
+    cout << "Tolerancia: " << tol << endl;
 
     do
     {
@@ -227,8 +214,8 @@ void puntoFijo(){
     double tol, eprox, epor;
     int i = 0;
 
-    tol = pow(10, -8);
-
+    //Definir tolerancia (si la piden)
+    tol = pow(10,-8);
     cout << "Tolerancia: " << tol << endl;
 
     cout << "\nIngrese el valor inicial (Por defecto 0)" << endl;
@@ -264,8 +251,8 @@ void newRaph(){
     double tol, eprox, epor;
     int i = 0;
 
+    //Definir tolerancia (si la piden)
     tol = pow(10,-8);
-
     cout << "Tolerancia: " << tol << endl;
 
     cout << "\nIngrese el valor de inicio" << endl;
@@ -306,8 +293,8 @@ void secante(){
     double tol, eprox, epor;
     int i = 0;
 
-    tol = 0.0001;
-
+    //Definir tolerancia (si la piden)
+    tol = pow(10,-8);
     cout << "Tolerancia: " << tol << endl;
 
     cout << "\nIngrese valor para xv" << endl;

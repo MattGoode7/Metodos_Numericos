@@ -12,8 +12,8 @@
 #include <math.h>
 #include <iostream>
 
-#define MAXC 10
-#define MAXR 10
+#define MAXC 15
+#define MAXR 15
 
 using namespace std;
 
@@ -146,17 +146,6 @@ void jacobi(double m[MAXR][MAXC], double b[MAXR], int rows, int columns){
         
         error = sqrt(error);
 
-        /*
-        Criterio de corte entre dos puntos consecutivos
-
-        sum = 0
-        for (int i = 0; i < rows; i++){
-            for (int j = 0; j < columns; j++){
-
-            }
-        }
-        */
-
     } while (tol < error && iter < 10000);
     
     if(iter == 9999){
@@ -181,7 +170,7 @@ void gs(double m[MAXR][MAXC], double b[MAXR], int rows, int columns){
     double suma;
     double aux = 0;
     double error = 0;
-    double tol = pow(10, -10);
+    double tol = pow(10, -8);
     int iter = 0;
 
     //Diagonalmente dominante
